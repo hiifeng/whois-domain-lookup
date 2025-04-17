@@ -7,9 +7,12 @@ RUN apt-get update && apt-get install -y libicu-dev && \
     mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY . ./
+COPY ports.conf.template /etc/apache2/ports.conf.template
 
 RUN mv entrypoint.sh /usr/local/bin/whois-domain-lookup-entrypoint && \
     chmod +x /usr/local/bin/whois-domain-lookup-entrypoint
 
 ENTRYPOINT ["whois-domain-lookup-entrypoint"]
-CMD ["apache2-foreground"]
+# CMD ["apache2-foreground"]
+
+CMD ["/bin/sh", "-c", "envsubst < /etc/apache2/ports.conf.template > /etc/apache2/ports.conf && apache2-foreground"]
